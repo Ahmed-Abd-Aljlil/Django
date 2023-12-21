@@ -1,19 +1,35 @@
 {% extends "blog/base.html" %}
 
-{% block title %}My Blog{% endblock %}
+{% block title %}
+    My Blog
+{% endblock %}
 
 {% block content %}
+    <!-- عنوان رئيسي للصفحة -->
     <h1>My Blog</h1>
+    
+    <!-- بداية دورة تكرار لعرض المشاركات -->
     {% for post in posts %}
+        <!-- عنوان المشاركة مع رابط إلى التفاصيل -->
         <h2>
-        <a href="{{post.get_absolute_url}}">
-        {{ post.title }}
-        </a>
+            <a href="{{ post.get_absolute_url }}">
+                {{ post.title }}
+            </a>
         </h2>
+        
+        <!-- تاريخ نشر المشاركة واسم المؤلف -->
         <p class="date">
-        Published {{ post.publish }} by {{ post.author }}
+            Published {{ post.publish }} by {{ post.author }}
         </p>
+        
+        <!-- ملخص قصير من محتوى المشاركة مع قص النص إلى 30 كلمة وتقسيم الأسطر -->
         {{ post.body|truncatewords:30|linebreaks }}
+        
+        <!-- خط أفقي لفصل بين المشاركات -->
         <hr />
     {% endfor %}
+    <!-- نهاية دورة التكرار -->
+    
+    <!-- تضمين قالب البيجنيشن لعرض أزرار التنقل بين الصفحات -->
+    {% include "pagination.html" with page=posts %}
 {% endblock %}

@@ -1,0 +1,20 @@
+<!-- عنصر div لتخصيص مظهر بيجنيشن (أزرار التنقل بين الصفحات) -->
+<div class="pagination">
+    <!-- عنصر span يحتوي على الروابط للصفحات السابقة واللاحقة -->
+    <span class="step-links">
+        <!-- إذا كان هناك صفحة سابقة، عرض رابط للصفحة السابقة -->
+        {% if page.has_previous %}
+            <a href="?page={{ page.previous_page_number }}">Previous</a>
+        {% endif %}
+        
+        <!-- عنصر span لعرض رقم الصفحة الحالية وإجمالي عدد الصفحات -->
+        <span class="current">
+            Page {{ page.number }} of {{ page.paginator.num_pages }}.
+        </span>
+        
+        <!-- إذا كان هناك صفحة لاحقة، عرض رابط للصفحة اللاحقة -->
+        {% if page.has_next %}
+            <a href="?page={{ page.next_page_number }}">Next</a>            
+        {% endif %}
+    </span>
+</div>

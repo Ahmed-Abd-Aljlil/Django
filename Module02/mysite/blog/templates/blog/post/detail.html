@@ -1,11 +1,19 @@
 {% extends "blog/base.html" %}
+    <!-- عنوان الصفحة يتم استناده إلى عنوان المشاركة -->
 
-{% block title %}{{ post.title }}{% endblock %}
+{% block title %}
+    {{ post.title }}
+{% endblock %}
 
 {% block content %}
+    <!-- عنوان رئيسي للصفحة يستند إلى عنوان المشاركة -->
     <h1>{{ post.title }}</h1>
+    
+    <!-- تاريخ نشر المشاركة واسم المؤلف -->
     <p class="date">
-    Published {{ post.publish }} by {{ post.author }}
+        Published {{ post.publish }} by {{ post.author }}
     </p>
+    
+    <!-- عرض محتوى المشاركة مع تحويل الأسطر إلى أكواد HTML -->
     {{ post.body|linebreaks }}
 {% endblock %}
