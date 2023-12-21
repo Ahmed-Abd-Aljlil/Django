@@ -1,32 +1,39 @@
 from django.shortcuts import render,  get_object_or_404
 from .models import Post
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.views.generic import ListView
 
+# def post_list(request):
+#     # استعراض كافة المشاركات الموجودة في نموذج Post
+#     post_list = Post.objects.all()
 
-def post_list(request):
-    # استعراض كافة المشاركات الموجودة في نموذج Post
-    post_list = Post.objects.all()
+#     # إنشاء كائن Paginator وتحديد عدد المشاركات في كل صفحة (في هذه الحالة 3)
+#     paginator = Paginator(post_list, 3)
 
-    # إنشاء كائن Paginator وتحديد عدد المشاركات في كل صفحة (في هذه الحالة 3)
-    paginator = Paginator(post_list, 3)
+#     # الحصول على رقم الصفحة المطلوب من الطلب الوارد (إذا لم يتم تحديده، فستكون الصفحة الأولى)
+#     page_number = request.GET.get('page', 1)
 
-    # الحصول على رقم الصفحة المطلوب من الطلب الوارد (إذا لم يتم تحديده، فستكون الصفحة الأولى)
-    page_number = request.GET.get('page', 1)
+#     try:
+#         # محاولة استرداد الصفحة المطلوبة
+#         posts = paginator.page(page_number)
+#     except PageNotAnInteger:
+#         # إذا كان رقم الصفحة ليس عددًا صحيحًا، استخدام الصفحة الأولى كبديل
+#         posts = paginator.page(1) 
+#     except EmptyPage:
+#         # إذا كان رقم الصفحة خارج نطاق الصفحات المتاحة، استخدام آخر صفحة متاحة كبديل
+#         posts = paginator.page(paginator.num_pages)
 
-    try:
-        # محاولة استرداد الصفحة المطلوبة
-        posts = paginator.page(page_number)
-    except PageNotAnInteger:
-        # إذا كان رقم الصفحة ليس عددًا صحيحًا، استخدام الصفحة الأولى كبديل
-        posts = paginator.page(1) 
-    except EmptyPage:
-        # إذا كان رقم الصفحة خارج نطاق الصفحات المتاحة، استخدام آخر صفحة متاحة كبديل
-        posts = paginator.page(paginator.num_pages)
+#     # تقديم النتائج إلى القالب وإرجاعها كاستجابة
+#     return render(request, 'blog/post/list.html', {'posts': posts})
 
-    # تقديم النتائج إلى القالب وإرجاعها كاستجابة
-    return render(request, 'blog/post/list.html', {'posts': posts})
-
-
+class PostListView(ListView):
+    """"
+    alternative post list view
+    """
+    model = Post
+    context_object_name = 'posts'
+    paginate_by = 3
+    template_name = 'blog/post/list.html'
 
 def post_detail(request, year, month, day, post):
     # الحصول على المشاركة المحددة بناءً على السنة والشهر واليوم واسم المشاركة (slug)
