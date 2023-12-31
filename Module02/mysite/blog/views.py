@@ -2,7 +2,10 @@ from django.shortcuts import render,  get_object_or_404
 from .models import Post
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.views.generic import ListView
+from .forms import EmailPostForm
+from django.core.mail import send_mail
 
+#from .models import get_absolute_url
 # def post_list(request):
 #     # استعراض كافة المشاركات الموجودة في نموذج Post
 #     post_list = Post.objects.all()
@@ -32,7 +35,7 @@ class PostListView(ListView):
     """
     model = Post
     context_object_name = 'posts'
-    paginate_by = 3
+    paginate_by = 4
     template_name = 'blog/post/list.html'
 
 def post_detail(request, year, month, day, post):
@@ -48,4 +51,44 @@ def post_detail(request, year, month, day, post):
 
     # تقديم المشاركة المحددة إلى القالب وإرجاعها كاستجابة
     return render(request, 'blog/post/detail.html', {'post': post})
+from django.core.mail import send_mail
+from django.shortcuts import render, get_object_or_404
+from .models import Post
+from .forms import EmailPostForm  # استيراد نموذج البريد
 
+def post_share(request, post_id):
+    # الحصول على المشاركة بناءً على الهوية مع التحقق من الحالة
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    
+    # تم تحديد sent على False في البداية لإشارة إلى عدم إرسال البريد الإلكتروني بعد
+    sent = False
+
+    # معالجة الطلبات الواردة
+    if request.method == 'POST':
+        # معالجة النموذج إذا كان الطلب POST
+        form = EmailPostForm(request.POST)
+
+        # التحقق من صحة النموذج
+        if form.is_valid():  
+            # استخراج البيانات النظيفة من النموذج
+            cd = form.cleaned_data
+            post_url = request.build_absolute_uri(post.get_absolute_url())
+            
+            # إعداد البريد الإلكتروني
+            subject = f"{cd['name']} recommends you read {post.title}"
+            message = f"Read {post.title} at {post_url} \n {cd['name']} \n comments: {cd['comments']}"
+
+            # إرسال البريد الإلكتروني باستخدام وظيفة send_mail
+            send_mail(subject, message, 'abd79363@gmail.com', [cd['to']])
+            
+            # تعيين sent إلى True بمجرد إرسال البريد بنجاح
+            sent = True   
+
+    else:
+        # إنشاء نموذج فارغ إذا كان الطلب GET
+        form = EmailPostForm()
+
+    # عرض الصفحة مع المشاركة ونموذج البريد وحالة الإرسال
+    return render(request, 'blog/post/share.html', {'post': post, 'form': form, 'sent': sent})
+
+    
